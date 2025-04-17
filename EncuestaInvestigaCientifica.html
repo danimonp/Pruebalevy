@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Aspectos Éticos, Bioéticos y de Integridad Científica</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c5282;
+            --primary-light: #3182ce;
+            --primary-dark: #1a365d;
+            --secondary: #38a169;
+            --secondary-light: #48bb78;
+            --warning: #dd6b20;
+            --danger: #e53e3e;
+            --neutral-100: #f7fafc;
+            --neutral-200: #edf2f7;
+            --neutral-300: #e2e8f0;
+            --neutral-600: #718096;
+            --neutral-700: #4a5568;
+            --neutral-800: #2d3748;
+            --neutral-900: #1a202c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--neutral-100);
+            color: var(--neutral-800);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 160px);
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .survey-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .survey-title {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--neutral-200);
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+        
+        .question-number {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .answers {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-yes {
+            background-color: var(--secondary-light);
+            color: white;
+        }
+        
+        .btn-yes:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-no {
+            background-color: var(--neutral-300);
+            color: var(--neutral-800);
+        }
+        
+        .btn-no:hover {
+            background-color: var(--neutral-600);
+            color: white;
+        }
+        
+        .navigation {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-nav {
+            background-color: var(--neutral-600);
+            color: white;
+        }
+        
+        .btn-nav:hover {
+            background-color: var(--neutral-700);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary);
+        }
+        
+        .btn:disabled {
+            background-color: var(--neutral-300);
+            color: var(--neutral-600);
+            cursor: not-allowed;
+        }
+        
+        .feedback-container {
+            background-color: var(--neutral-200);
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .feedback-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .results-title {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--neutral-200);
+        }
+        
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: var(--neutral-200);
+        }
+        
+        .result-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .result-answer {
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        
+        .result-feedback {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--neutral-300);
+        }
+        
+        .btn-restart {
+            background-color: var(--primary-light);
+            color: white;
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 30px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--neutral-200);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .requirements-section {
+            margin-top: 30px;
+        }
+        
+        .requirements-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .requirements-list {
+            padding-left: 20px;
+        }
+        
+        .requirements-list li {
+            margin-bottom: 10px;
+        }
+        
+        .export-section {
+            margin-top: 30px;
+        }
+        
+        .final-requirements {
+            background-color: var(--neutral-200);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .final-requirements-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .final-requirements-list {
+            padding-left: 20px;
+        }
+        
+        .final-requirements-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Evaluación de Aspectos Éticos, Bioéticos y de Integridad Científica</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="app-wrapper">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="main-content">
+                <div class="survey-container" id="surveyContainer">
+                    <h2 class="survey-title">Encuesta de Aspectos Éticos, Bioéticos y de Integridad Científica</h2>
+                    
+                    <div class="question-container" id="questionContainer">
+                        <div class="question">
+                            <span class="question-number" id="questionNumber">1</span>
+                            <span id="questionText">¿El proyecto involucra seres humanos como participantes (encuestas, entrevistas, pruebas experimentales, intervenciones)?</span>
+                        </div>
+                        
+                        <div class="feedback-container hidden" id="feedbackContainer">
+                            <h3 class="feedback-title">Requerimientos:</h3>
+                            <div id="feedbackText"></div>
+                        </div>
+                        
+                        <div class="answers">
+                            <button class="btn btn-yes" id="btnYes">Sí</button>
+                            <button class="btn btn-no" id="btnNo">No</button>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <button class="btn btn-nav" id="btnPrevious" disabled>Anterior</button>
+                        <button class="btn btn-primary" id="btnRestart" style="display: none;">Reiniciar</button>
+                        <button class="btn btn-nav" id="btnSkip" style="display: none;">Finalizar evaluación</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-container hidden" id="resultsContainer">
+                <h2 class="results-title">Resultados de la Evaluación</h2>
+                <div id="resultsList"></div>
+                
+                <div class="final-requirements">
+                    <h3 class="final-requirements-title">Todos los proyectos deben incluir:</h3>
+                    <ul class="final-requirements-list">
+                        <li>Carta de compromiso de los investigadores, donde declaran su responsabilidad en el desarrollo del proyecto, la ejecución financiera y la generación de productividad derivada, conforme a principios de integridad científica establecidos por la Comisión Nacional de Ética en Investigación en Colombia y el Committee on Publication Ethics (COPE).</li>
+                        <li>Declaración de conflicto o no conflicto de intereses, en la que cada integrante del equipo manifiesta si tiene o no intereses que puedan afectar la objetividad del proyecto, siguiendo la Ley 1474 de 2011.</li>
+                        <li>Consideraciones éticas generales, incluso cuando no apliquen directamente, que incluyan:
+                            <ul>
+                                <li>Beneficencia y no maleficencia</li>
+                                <li>Respeto a las personas</li>
+                                <li>Justicia</li>
+                                <li>Habeas Data, tipo de información a obtener, confidencialidad y privacidad</li>
+                                <li>Protocolos de bioseguridad y protección al medio ambiente</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="export-section">
+                    <button class="btn btn-primary" id="btnExportText">Exportar como texto</button>
+                    <button class="btn btn-primary" id="btnExportPDF">Exportar como PDF</button>
+                    <button class="btn btn-restart" id="btnRestartFromResults">Iniciar nueva evaluación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Estructura de la clave dicotómica exactamente como se indica en el documento
+        const questions = [
+            {
+                id: 1,
+                text: "¿El proyecto involucra seres humanos como participantes (encuestas, entrevistas, pruebas experimentales, intervenciones)?",
+                yes: { next: 2, feedback: "" },
+                no: { next: 10, feedback: "" }
+            },
+            {
+                id: 2,
+                text: "¿Los participantes pertenecen a comunidades indígenas?",
+                yes: { 
+                    next: 3, 
+                    feedback: "Incluir consentimiento libre, previo e informado individual y colectivo, validación cultural, respeto a autoridades tradicionales, y considerar consulta previa. Aplicar lo definido en el Convenio 169 de la OIT."
+                },
+                no: { next: 3, feedback: "" }
+            },
+            {
+                id: 3,
+                text: "¿Los participantes pertenecen a poblaciones vulnerables (víctimas del conflicto, personas privadas de la libertad, en situación de calle, campesinos, indígenas, entre otros)?",
+                yes: { 
+                    next: 4, 
+                    feedback: "Incluir consentimiento informado con enfoque diferencial y medidas de protección reforzada."
+                },
+                no: { next: 4, feedback: "" }
+            },
+            {
+                id: 4,
+                text: "¿Los participantes son personas con discapacidad física, sensorial, cognitiva o psicosocial?",
+                yes: { 
+                    next: 5, 
+                    feedback: "Incluir ajustes razonables, accesibilidad comunicativa y consentimiento informado adaptado. Aplicar el enfoque diferencial y principios de autonomía, según la Convención sobre los Derechos de las Personas con Discapacidad."
+                },
+                no: { next: 5, feedback: "" }
+            },
+            {
+                id: 5,
+                text: "¿Los participantes pertenecen a comunidades minoritarias (religiosas, étnicas no indígenas, LGBTIQ+, entre otros)?",
+                yes: { 
+                    next: 6, 
+                    feedback: "Incluir garantías de no discriminación, anonimato reforzado y lenguaje inclusivo."
+                },
+                no: { next: 6, feedback: "" }
+            },
+            {
+                id: 6,
+                text: "¿Se trabajará con mujeres embarazadas?",
+                yes: { 
+                    next: 7, 
+                    feedback: "Evaluar doble impacto (madre-feto), aplicar principios de no maleficencia y consentimiento informado con claridad en los posibles riesgos, conforme a la Resolución 8430 de 1993."
+                },
+                no: { next: 7, feedback: "" }
+            },
+            {
+                id: 7,
+                text: "¿Los participantes son menores de edad?",
+                yes: { 
+                    next: 8, 
+                    feedback: "Incluir consentimiento informado de acudientes y asentimiento informado del menor. Este proceso debe cumplir con los principios de respeto por las personas y protección de poblaciones vulnerables establecidos en la Declaración de Helsinki y la Resolución 8430 de 1993 del Ministerio de Salud de Colombia."
+                },
+                no: { 
+                    next: 8, 
+                    feedback: "Incluir consentimiento informado de los participantes. Este documento debe detallar objetivos, riesgos, beneficios y confidencialidad, conforme a los lineamientos de la UNESCO en bioética y derechos humanos."
+                }
+            },
+            {
+                id: 8,
+                text: "¿Se recopilará información sensible (datos de salud, situación económica, política, religiosa, entre otros)?",
+                yes: { 
+                    next: 9, 
+                    feedback: "Asegurar confidencialidad y cumplimiento de Habeas Data (Ley 1581 de 2012 en Colombia) describiendo medidas de protección de datos en la metodología. Seguir las recomendaciones del Reglamento General de Protección de Datos (GDPR) de la Unión Europea para manejo adecuado de información personal."
+                },
+                no: { next: 9, feedback: "" }
+            },
+            {
+                id: 9,
+                text: "¿Se usarán dispositivos o técnicas invasivas para la recolección de datos?",
+                yes: { 
+                    next: 10, 
+                    feedback: "Incluir protocolos de bioseguridad y consideraciones sobre no maleficencia, siguiendo normativas como la Resolución 2378 de 2008 del Ministerio de Salud de Colombia. Si se realizarán procedimientos como toma de muestras de sangre u otras pruebas clínicas, se deberá incluir un profesional de salud (médico, enfermero, etc.) en el equipo investigador o establecer una vinculación temporal. Si el estudio aborda salud mental, describir abordajes metodológicos éticos, medidas preventivas ante malestar emocional y rutas de atención."
+                },
+                no: { next: 10, feedback: "" }
+            },
+            {
+                id: 10,
+                text: "¿El proyecto podría generar impactos ambientales por uso de productos químicos, emisiones, residuos peligrosos o modificación de ecosistemas?",
+                yes: { 
+                    next: 11, 
+                    feedback: "Enunciar en metodología medidas de mitigación ambiental y anexar licencias o permisos ambientales según el Decreto 1076 de 2015 en Colombia y normativas ISO 14001 sobre gestión ambiental."
+                },
+                no: { next: 11, feedback: "" }
+            },
+            {
+                id: 11,
+                text: "¿El proyecto implica uso de organismos vivos, tejidos biológicos o modificaciones genéticas?",
+                yes: { 
+                    next: 12, 
+                    feedback: "Incluir protocolos de bioseguridad, fichas técnicas y permisos ambientales (si aplica), según lo establecido en el Convenio sobre la Diversidad Biológica y el Protocolo de Nagoya."
+                },
+                no: { next: 15, feedback: "" } // SALTO a pregunta 15 si responde No
+            },
+            {
+                id: 12,
+                text: "¿El proyecto contempla experimentación con animales?",
+                yes: { next: 13, feedback: "" },
+                no: { next: 14, feedback: "" }
+            },
+            {
+                id: 13,
+                text: "¿Los animales son vertebrados o cefalópodos?",
+                yes: { 
+                    next: 14, 
+                    feedback: "Incluir protocolos de bienestar animal conforme a la Ley 84 de 1989 (Estatuto Nacional de Protección de los Animales), la Resolución 8430 de 1993 y las guías del Consejo Internacional para la Ciencia sobre el uso de animales en investigación. Se deberá contar con un profesional capacitado en manipulación y bienestar animal dentro del equipo investigador o establecer una colaboración con un especialista certificado. Si se realizarán procedimientos invasivos, se deberá incluir un médico veterinario."
+                },
+                no: { 
+                    next: 14, 
+                    feedback: "Asegurar buenas prácticas de manejo y bienestar animal según normativas institucionales y bioéticas aplicables."
+                }
+            },
+            {
+                id: 14,
+                text: "¿El proyecto involucra la recolección de muestras biológicas (partes de plantas o animales, matrices complejas con microorganismos, entre otros) u organismos vivos con fines industriales o de bioprospección?",
+                yes: { 
+                    next: 15, 
+                    feedback: "Se deberá determinar si se requiere permiso de colección y/o acceso a recursos genéticos. En caso afirmativo, se deberá proveer dicho permiso o enunciar el permiso marco institucional (si lo hay). Si no se cuenta con el permiso, incluir su gestión dentro del cronograma del proyecto y analizar los riesgos de no obtenerlo. Esto es obligatorio según el Decreto 1076 de 2015 y el Decreto 1376 de 2013 en Colombia."
+                },
+                no: { next: 15, feedback: "" }
+            },
+            {
+                id: 15,
+                text: "¿El proyecto implica el uso de microorganismos?",
+                yes: { 
+                    next: 16, 
+                    feedback: "Se deberá especificar en la metodología el tipo de microorganismos según su clasificación de riesgo (nivel 1, 2, 3 o 4 según la OMS) y detallar las medidas de bioseguridad y contención necesarias. Además, se debe indicar en qué laboratorios se trabajará, especificando su tipo y nivel de bioseguridad, con el fin de verificar la viabilidad del proyecto en relación con los microorganismos involucrados."
+                },
+                no: { next: 16, feedback: "" }
+            },
+            {
+                id: 16,
+                text: "¿El proyecto cuenta con financiamiento externo o alianzas institucionales?",
+                yes: { 
+                    next: 17, 
+                    feedback: "Anexar cartas de intención de alianzas en cumplimiento con la Ley 1474 de 2011 sobre transparencia y lucha contra la corrupción."
+                },
+                no: { next: 17, feedback: "" }
+            },
+            {
+                id: 17,
+                text: "Ha completado la evaluación de aspectos éticos, bioéticos y de integridad científica para su proyecto.",
+                yes: { next: -1, feedback: "" },
+                no: { next: -1, feedback: "" }
+            }
+        ];
+
+        // Variables del estado de la aplicación
+        let currentQuestionId = 1;
+        let history = [];
+        let answers = {};
+
+        // Inicializar elementos DOM cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a elementos DOM
+            const questionContainer = document.getElementById('questionContainer');
+            const questionNumber = document.getElementById('questionNumber');
+            const questionText = document.getElementById('questionText');
+            const btnYes = document.getElementById('btnYes');
+            const btnNo = document.getElementById('btnNo');
+            const btnPrevious = document.getElementById('btnPrevious');
+            const btnRestart = document.getElementById('btnRestart');
+            const btnSkip = document.getElementById('btnSkip');
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const feedbackText = document.getElementById('feedbackText');
+            const progressBar = document.getElementById('progressBar');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsList = document.getElementById('resultsList');
+            const btnExportText = document.getElementById('btnExportText');
+            const btnExportPDF = document.getElementById('btnExportPDF');
+            const btnRestartFromResults = document.getElementById('btnRestartFromResults');
+            const surveyContainer = document.getElementById('surveyContainer');
+            
+            // Configurar event listeners
+            btnYes.addEventListener('click', () => answerQuestion('yes'));
+            btnNo.addEventListener('click', () => answerQuestion('no'));
+            btnPrevious.addEventListener('click', goToPreviousQuestion);
+            btnRestart.addEventListener('click', initSurvey);
+            btnSkip.addEventListener('click', showResults);
+            btnExportText.addEventListener('click', exportResults);
+            btnExportPDF.addEventListener('click', exportPDF);
+            btnRestartFromResults.addEventListener('click', initSurvey);
+
+            // Funciones de la aplicación
+            function initSurvey() {
+                currentQuestionId = 1;
+                history = [];
+                answers = {};
+                displayQuestion(currentQuestionId);
+                progressBar.style.width = '0%';
+                surveyContainer.style.display = 'block';
+                resultsContainer.classList.add('hidden');
+                btnRestart.style.display = 'none';
+                btnSkip.style.display = 'none';
+            }
+            
+            function displayQuestion(questionId) {
+                // Si llegamos al final (17), mostrar resumen
+                if (questionId === 17) {
+                    showFinalQuestion();
+                    return;
+                }
+                
+                // Si es un ID inválido, mostrar resultados
+                if (questionId < 1 || questionId > questions.length) {
+                    showResults();
+                    return;
+                }
+                
+                const question = questions.find(q => q.id === questionId);
+                
+                // Actualizar la interfaz con la pregunta actual
+                questionNumber.textContent = question.id;
+                questionText.textContent = question.text;
+                
+                // Restaurar botones si estaban ocultos
+                btnYes.style.display = 'inline-block';
+                btnNo.style.display = 'inline-block';
+                
+                // Actualizar la barra de progreso
+                const progress = (questionId / 16) * 100;
+                progressBar.style.width = progress + '%';
+                
+                // Actualizar el estado de los botones
+                btnPrevious.disabled = history.length === 0;
+                
+                // Mostrar feedback si ya hay una respuesta para esta pregunta
+                if (answers[questionId]) {
+                    const response = answers[questionId];
+                    const feedback = question[response].feedback;
+                    
+                    if (feedback && feedback.trim() !== '') {
+                        feedbackContainer.classList.remove('hidden');
+                        feedbackText.innerHTML = feedback;
+                    } else {
+                        feedbackContainer.classList.add('hidden');
+                    }
+                } else {
+                    feedbackContainer.classList.add('hidden');
+                }
+            }
+            
+            function showFinalQuestion() {
+                const question = questions.find(q => q.id === 17);
+                questionNumber.textContent = question.id;
+                questionText.textContent = question.text;
+                
+                // Ocultar botones de respuesta
+                btnYes.style.display = 'none';
+                btnNo.style.display = 'none';
+                
+                // Mostrar botón de reinicio y finalizar
+                btnRestart.style.display = 'inline-block';
+                btnSkip.style.display = 'inline-block';
+                
+                // Actualizar la barra de progreso
+                progressBar.style.width = '100%';
+            }
+            
+            function answerQuestion(response) {
+                const question = questions.find(q => q.id === currentQuestionId);
+                
+                // Guardar la respuesta
+                answers[currentQuestionId] = response;
+                
+                // Mostrar feedback inmediato si existe
+                const feedback = question[response].feedback;
+                if (feedback && feedback.trim() !== '') {
+                    feedbackContainer.classList.remove('hidden');
+                    feedbackText.innerHTML = feedback;
+                } else {
+                    feedbackContainer.classList.add('hidden');
+                }
+                
+                // Guardar el historial para poder retroceder
+                history.push(currentQuestionId);
+                
+                // Determinar la siguiente pregunta según la respuesta
+                const nextQuestionId = question[response].next;
+                
+                console.log('Pregunta actual: ' + currentQuestionId + ', Respuesta: ' + response + ', Siguiente: ' + nextQuestionId);
+                
+                // Actualizar la pregunta actual
+                currentQuestionId = nextQuestionId;
+                
+                // Mostrar la siguiente pregunta o los resultados
+                displayQuestion(currentQuestionId);
+            }
+            
+            function goToPreviousQuestion() {
+                if (history.length > 0) {
+                    // Obtener la pregunta anterior
+                    currentQuestionId = history.pop();
+                    
+                    // Mostrar la pregunta anterior
+                    displayQuestion(currentQuestionId);
+                    
+                    // Restablecer los botones si estamos retrocediendo desde la pregunta final
+                    btnYes.style.display = 'inline-block';
+                    btnNo.style.display = 'inline-block';
+                    btnRestart.style.display = 'none';
+                    btnSkip.style.display = 'none';
+                }
+            }
+            
+            function showResults() {
+                // Ocultar la encuesta y mostrar los resultados
+                surveyContainer.style.display = 'none';
+                resultsContainer.classList.remove('hidden');
+                
+                // Limpiar la lista de resultados
+                resultsList.innerHTML = '';
+                
+                // Generar la lista de resultados
+                for (const [questionId, answer] of Object.entries(answers)) {
+                    const questionObj = questions.find(q => q.id === parseInt(questionId));
+                    const feedback = questionObj[answer].feedback;
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+                    
+                    const resultQuestion = document.createElement('div');
+                    resultQuestion.classList.add('result-question');
+                    resultQuestion.textContent = questionId + '. ' + questionObj.text;
+                    
+                    const resultAnswer = document.createElement('div');
+                    resultAnswer.classList.add('result-answer');
+                    resultAnswer.textContent = 'Respuesta: ' + (answer === 'yes' ? 'Sí' : 'No');
+                    
+                    resultItem.appendChild(resultQuestion);
+                    resultItem.appendChild(resultAnswer);
+                    
+                    if (feedback && feedback.trim() !== '') {
+                        const resultFeedback = document.createElement('div');
+                        resultFeedback.classList.add('result-feedback');
+                        resultFeedback.innerHTML = '<strong>Requerimiento:</strong> ' + feedback;
+                        resultItem.appendChild(resultFeedback);
+                    }
+                    
+                    resultsList.appendChild(resultItem);
+                }
+            }
+            
+            function exportResults() {
+                let resultsText = "RESULTADOS DE LA EVALUACIÓN ÉTICA, BIOÉTICA Y DE INTEGRIDAD CIENTÍFICA\n\n";
+                
+                for (const [questionId, answer] of Object.entries(answers)) {
+                    const questionObj = questions.find(q => q.id === parseInt(questionId));
+                    const feedback = questionObj[answer].feedback;
+                    
+                    resultsText += questionId + '. ' + questionObj.text + '\n';
+                    resultsText += 'Respuesta: ' + (answer === 'yes' ? 'Sí' : 'No') + '\n';
+                    
+                    if (feedback && feedback.trim() !== '') {
+                        resultsText += 'Requerimiento: ' + feedback.replace(/<[^>]*>/g, '') + '\n';
+                    }
+                    
+                    resultsText += "\n";
+                }
+                
+                resultsText += "REQUERIMIENTOS GENERALES PARA TODOS LOS PROYECTOS:\n\n";
+                resultsText += "1. Carta de compromiso de los investigadores, donde declaran su responsabilidad en el desarrollo del proyecto, la ejecución financiera y la generación de productividad derivada, conforme a principios de integridad científica establecidos por la Comisión Nacional de Ética en Investigación en Colombia y el Committee on Publication Ethics (COPE).\n\n";
+                resultsText += "2. Declaración de conflicto o no conflicto de intereses, en la que cada integrante del equipo manifiesta si tiene o no intereses que puedan afectar la objetividad del proyecto, siguiendo la Ley 1474 de 2011.\n\n";
+                resultsText += "3. Consideraciones éticas generales:\n";
+                resultsText += "   - Beneficencia y no maleficencia\n";
+                resultsText += "   - Respeto a las personas\n";
+                resultsText += "   - Justicia\n";
+                resultsText += "   - Habeas Data, tipo de información a obtener, confidencialidad y privacidad\n";
+                resultsText += "   - Protocolos de bioseguridad y protección al medio ambiente\n";
+                
+                // Crear un blob y descargarlo
+                const blob = new Blob([resultsText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'evaluacion_etica_proyecto.txt';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            }
+
+            // Función para exportar PDF
+            function exportPDF() {
+                if (!window.jspdf || !window.html2canvas) {
+                    console.error("Las librerías jsPDF o html2canvas no están disponibles");
+                    alert("No se puede generar el PDF. Error al cargar las librerías necesarias.");
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                
+                // Crear un contenedor temporal para el informe PDF
+                const reportContainer = document.createElement('div');
+                reportContainer.style.padding = '40px';
+                reportContainer.style.backgroundColor = 'white';
+                reportContainer.style.width = '800px';
+                reportContainer.style.fontFamily = 'Arial, sans-serif';
+                reportContainer.style.position = 'absolute';
+                reportContainer.style.left = '-9999px';
+                reportContainer.style.margin = '20px';
+                document.body.appendChild(reportContainer);
+                
+                // Crear el contenido del informe
+                const title = document.createElement('h1');
+                title.textContent = 'INFORME DE EVALUACIÓN ÉTICA, BIOÉTICA Y DE INTEGRIDAD CIENTÍFICA';
+                title.style.textAlign = 'center';
+                title.style.color = '#2c5282';
+                title.style.marginBottom = '20px';
+                reportContainer.appendChild(title);
+                
+                // Agregar fecha
+                const date = document.createElement('p');
+                date.textContent = 'Fecha de evaluación: ' + new Date().toLocaleDateString();
+                date.style.marginBottom = '30px';
+                reportContainer.appendChild(date);
+                
+                // Agregar resultados
+                const resultsTitle = document.createElement('h2');
+                resultsTitle.textContent = 'Resultados de la Evaluación';
+                resultsTitle.style.color = '#2c5282';
+                resultsTitle.style.marginBottom = '20px';
+                reportContainer.appendChild(resultsTitle);
+
+                for (const [questionId, answer] of Object.entries(answers)) {
+                    const questionObj = questions.find(q => q.id === parseInt(questionId));
+                    const feedback = questionObj[answer].feedback;
+                    
+                    const resultDiv = document.createElement('div');
+                    resultDiv.style.marginBottom = '20px';
+                    resultDiv.style.padding = '15px';
+                    resultDiv.style.backgroundColor = '#f7fafc';
+                    resultDiv.style.border = '1px solid #e2e8f0';
+                    
+                    const questionText = document.createElement('p');
+                    questionText.textContent = questionId + '. ' + questionObj.text;
+                    questionText.style.fontWeight = 'bold';
+                    resultDiv.appendChild(questionText);
+                    
+                    const answerText = document.createElement('p');
+                    answerText.textContent = 'Respuesta: ' + (answer === 'yes' ? 'Sí' : 'No');
+                    resultDiv.appendChild(answerText);
+                    
+                    if (feedback && feedback.trim() !== '') {
+                        const feedbackText = document.createElement('p');
+                        feedbackText.innerHTML = '<strong>Requerimiento:</strong> ' + feedback;
+                        resultDiv.appendChild(feedbackText);
+                    }
+                    
+                    reportContainer.appendChild(resultDiv);
+                }
+                
+                // Agregar requerimientos finales
+                const finalReqTitle = document.createElement('h2');
+                finalReqTitle.textContent = 'Requerimientos Generales (obligatorios para todos los proyectos)';
+                finalReqTitle.style.marginTop = '40px';
+                finalReqTitle.style.marginBottom = '20px';
+                finalReqTitle.style.color = '#2c5282';
+                finalReqTitle.style.pageBreakBefore = 'always';
+                reportContainer.appendChild(finalReqTitle);
+
+                // Carta de compromiso
+                const req1 = document.createElement('div');
+                req1.style.marginBottom = '20px';
+                req1.style.padding = '15px';
+                req1.style.backgroundColor = '#f7fafc';
+                req1.style.border = '1px solid #e2e8f0';
+                req1.innerHTML = '<p style="font-weight: bold; margin-bottom: 10px;">1. Carta de compromiso de los investigadores</p>' +
+                    '<p>Donde declaran su responsabilidad en el desarrollo del proyecto, la ejecución financiera y la generación de productividad derivada, conforme a principios de integridad científica establecidos por la Comisión Nacional de Ética en Investigación en Colombia y el Committee on Publication Ethics (COPE).</p>';
+                reportContainer.appendChild(req1);
+
+                // Declaración de conflicto
+                const req2 = document.createElement('div');
+                req2.style.marginBottom = '20px';
+                req2.style.padding = '15px';
+                req2.style.backgroundColor = '#f7fafc';
+                req2.style.border = '1px solid #e2e8f0';
+                req2.innerHTML = '<p style="font-weight: bold; margin-bottom: 10px;">2. Declaración de conflicto o no conflicto de intereses</p>' +
+                    '<p>En la que cada integrante del equipo manifiesta si tiene o no intereses que puedan afectar la objetividad del proyecto, siguiendo la Ley 1474 de 2011.</p>';
+                reportContainer.appendChild(req2);
+
+                // Consideraciones éticas
+                const req3 = document.createElement('div');
+                req3.style.marginBottom = '20px';
+                req3.style.padding = '15px';
+                req3.style.backgroundColor = '#f7fafc';
+                req3.style.border = '1px solid #e2e8f0';
+                req3.innerHTML = '<p style="font-weight: bold; margin-bottom: 10px;">3. Consideraciones éticas generales:</p>' +
+                    '<ul style="margin-left: 20px; margin-top: 10px;">' +
+                    '<li>Beneficencia y no maleficencia</li>' +
+                    '<li>Respeto a las personas</li>' +
+                    '<li>Justicia</li>' +
+                    '<li>Habeas Data, tipo de información a obtener, confidencialidad y privacidad</li>' +
+                    '<li>Protocolos de bioseguridad y protección al medio ambiente</li>' +
+                    '</ul>';
+                reportContainer.appendChild(req3);
+
+                // Generar el PDF usando html2canvas y jsPDF
+                try {
+                    setTimeout(() => {
+                        html2canvas(reportContainer, {
+                            scale: 2, // Aumentar la calidad del renderizado
+                            useCORS: true,
+                            logging: false,
+                            windowWidth: reportContainer.scrollWidth
+                        }).then(canvas => {
+                            try {
+                                const imgData = canvas.toDataURL('image/png');
+                                const pdf = new jsPDF('p', 'mm', 'a4');
+                                
+                                // Dimensiones de página A4 en mm
+                                const pageWidth = 210;
+                                const pageHeight = 297;
+                                
+                                // Definir márgenes en mm
+                                const margins = {
+                                    top: 25,
+                                    bottom: 25,
+                                    left: 25,
+                                    right: 25
+                                };
+                                
+                                // Calcular dimensiones del área de contenido
+                                const contentWidth = pageWidth - margins.left - margins.right;
+                                const contentHeight = pageHeight - margins.top - margins.bottom;
+                                
+                                // Calcular dimensiones de la imagen manteniendo la proporción
+                                const imgWidth = contentWidth;
+                                const imgHeight = (canvas.height * contentWidth) / canvas.width;
+                                
+                                // Variables para el manejo de páginas
+                                let heightLeft = imgHeight;
+                                let currentPage = 0;
+                                
+                                // Agregar páginas según sea necesario
+                                while (heightLeft > 0) {
+                                    // Posición Y para la imagen en la página actual
+                                    const position = currentPage === 0 ? margins.top : -(currentPage * contentHeight) + margins.top;
+                                    
+                                    // Agregar nueva página si no es la primera
+                                    if (currentPage > 0) {
+                                        pdf.addPage();
+                                    }
+                                    
+                                    // Agregar la imagen
+                                    pdf.addImage(
+                                        imgData,
+                                        'PNG',
+                                        margins.left,
+                                        position,
+                                        imgWidth,
+                                        imgHeight
+                                    );
+                                    
+                                    heightLeft -= contentHeight;
+                                    currentPage++;
+                                }
+                                
+                                pdf.save('evaluacion_etica_proyecto.pdf');
+                                document.body.removeChild(reportContainer);
+                            } catch (error) {
+                                console.error("Error al generar el PDF: ", error);
+                                alert("Error al generar el PDF. Por favor, intente nuevamente.");
+                                document.body.removeChild(reportContainer);
+                            }
+                        }).catch(error => {
+                            console.error("Error en html2canvas: ", error);
+                            alert("Error al generar el PDF. Por favor, intente nuevamente.");
+                            document.body.removeChild(reportContainer);
+                        });
+                    }, 500);
+                } catch (error) {
+                    console.error("Error general al generar PDF: ", error);
+                    alert("Error al generar el PDF. Por favor, intente nuevamente.");
+                    document.body.removeChild(reportContainer);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
